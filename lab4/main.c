@@ -4,7 +4,7 @@
 #include "sort.c"
 #include <locale.h>
 #include <readline/readline.h>
-
+#include <string.h>
 typedef struct Sub {
     char* full_name; 
     char phone[16];
@@ -21,18 +21,34 @@ Sub* read_data(Sub* sub, int* size) {
         if (com == 1) {
             /* Чтение из стандратного потока ввода */
             sub[*(size)-1].full_name = readline("Введите полное имя: ");
-            printf("%s\n", sub[(*size)-1].full_name);
+            //printf("%s\n", sub[(*size)-1].full_name);
             printf("\nВведите номер телефона: ");
             scanf("%s", sub[(*size)-1].phone);
-            printf("%s\n", sub[(*size)-1].phone);
+            //printf("%s\n", sub[(*size)-1].phone);
             printf("\nВведите время последнего звонка: ");
             scanf("%d", &sub[(*size)-1].time);
-            printf("%d\n", sub[(*size)-1].time);
+            //printf("%d\n", sub[(*size)-1].time);
             (*size)++;
             sub = (Sub*) realloc(sub, (*size) * sizeof(Sub));
         } else if (com == 2) {
-            printf("doing 2...\n");
             /* Чтение из текстового файла */
+            char* full_name, char phone[16]; int time;
+            char file_name[255];
+            printf("Читать из файла: ");
+            scanf("%s", file_name);
+            FILE* fp;
+            fp = fopen(file_name, "a+b");
+            char buf[255];
+            while (fgets(buf, 255, fp) != NULL) {
+                printf("%s\n", buf);
+                // Parsing buf
+                char* plus = strchr(buf, '+');
+                full_name = strncpy(buf, (buf+plus));
+
+            }
+            fclose(fp);
+            //printf("Читаем из файла %s...\n", file_name);
+
         } else if (com == 3) {
             /* Генерация случайных данных */
             printf("doing 3...\n");

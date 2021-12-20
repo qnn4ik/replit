@@ -5,6 +5,8 @@
 #include <locale.h>
 #include <readline/readline.h>
 #include <string.h>
+#include <math.h>
+
 typedef struct Sub {
     char* full_name; 
     char phone[16];
@@ -31,19 +33,56 @@ Sub* read_data(Sub* sub, int* size) {
             (*size)++;
             sub = (Sub*) realloc(sub, (*size) * sizeof(Sub));
         } else if (com == 2) {
-            /* Чтение из текстового файла */
-            char* full_name, char phone[16]; int time;
-            char file_name[255];
+            /* Чтение данных из текстового файла */
+            char* full_name; char* time_s;
+            char phone[16], file_name[255];
+            int time_d = 0;
             printf("Читать из файла: ");
             scanf("%s", file_name);
             FILE* fp;
             fp = fopen(file_name, "a+b");
             char buf[255];
+
             while (fgets(buf, 255, fp) != NULL) {
-                printf("%s\n", buf);
-                // Parsing buf
                 char* plus = strchr(buf, '+');
-                full_name = strncpy(buf, (buf+plus));
+                full_name = (char*)malloc(((plus - buf) + 1) * sizeof(char));
+                strncpy(full_name, buf, plus - buf);
+                full_name[plus-buf-1] = '\0';
+                char* space = strrchr(buf, ' ');
+                strncpy(phone, plus, space - plus);
+                phone[space - plus] = '\0';
+                space++;
+                time_s = space;
+                time_s[strlen(time_s)-1] = '0';
+                printf("We found out these data: %s, %s, %s;\n", full_name, phone, time_s);
+
+                // validate time_s
+                int check = 1;
+                for (int i = 0; i < strlen(time_s); i++) {
+                    char c = time_s[i];
+                    int cif = c - '0';
+                    if (cif > 10 || cif < 0) {
+                        check = 0;
+                        break;
+                    }
+                    time_d += cif * pow(10, strlen(time_s) - i);
+                    //time_d ++;
+                }
+
+                if (!check) {
+                    printf("%s\n", "Не успешно");
+                    free(full_name);
+                    continue;
+                }
+
+                printf("%s\n", "Успешно");
+                sub[*(size)-1].full_name = malloc(strlen(full_name)*sizeof(full_name));
+                strcpy(sub[*(size)-1].full_name, full_name);
+                strcpy(sub[*(size)-1].phone, phone);
+                sub[*(size)-1].time = time_d;
+                (*size)++;
+                sub = (Sub*) realloc(sub, (*size) * sizeof(Sub));
+                free(full_name);
 
             }
             fclose(fp);
@@ -148,6 +187,9 @@ int main() {
     }
 
     if (com == 0) {
+        for (int i = 0; i < size-1; i++) {
+            free(sub[i].full_name);
+        }
         free(sub);
         printf("Выход...\n");
     }

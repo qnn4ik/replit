@@ -10,7 +10,7 @@
 typedef struct Sub {
     char* full_name; 
     char phone[16];
-    int time;
+    long long time;
 } Sub;
 
 Sub* read_data(Sub* sub, int* size) {
@@ -28,7 +28,7 @@ Sub* read_data(Sub* sub, int* size) {
             scanf("%s", sub[(*size)-1].phone);
             //printf("%s\n", sub[(*size)-1].phone);
             printf("\nВведите время последнего звонка: ");
-            scanf("%d", &sub[(*size)-1].time);
+            scanf("%lld", &sub[(*size)-1].time);
             //printf("%d\n", sub[(*size)-1].time);
             (*size)++;
             sub = (Sub*) realloc(sub, (*size) * sizeof(Sub));
@@ -36,7 +36,7 @@ Sub* read_data(Sub* sub, int* size) {
             /* Чтение данных из текстового файла */
             char* full_name; char* time_s;
             char phone[16], file_name[255];
-            int time_d = 0;
+            long long time_d = 0;
             printf("Читать из файла: ");
             scanf("%s", file_name);
             FILE* fp;
@@ -53,7 +53,7 @@ Sub* read_data(Sub* sub, int* size) {
                 phone[space - plus] = '\0';
                 space++;
                 time_s = space;
-                time_s[strlen(time_s)-1] = '0';
+                time_s[strlen(time_s)-1] = '\0';
                 printf("We found out these data: %s, %s, %s;\n", full_name, phone, time_s);
 
                 // validate time_s
@@ -65,8 +65,7 @@ Sub* read_data(Sub* sub, int* size) {
                         check = 0;
                         break;
                     }
-                    time_d += cif * pow(10, strlen(time_s) - i);
-                    //time_d ++;
+                    time_d += cif * pow(10, (strlen(time_s) - i - 1));
                 }
 
                 if (!check) {
@@ -83,6 +82,7 @@ Sub* read_data(Sub* sub, int* size) {
                 (*size)++;
                 sub = (Sub*) realloc(sub, (*size) * sizeof(Sub));
                 free(full_name);
+                time_d = 0;
 
             }
             fclose(fp);
@@ -119,7 +119,7 @@ void print_data(Sub* sub, int* size) {
             /* Запись в стандартный поток вывода */
             for (int i = 0; i < (*size)-1; i++) {
                 printf("Пользователь №%d:\n", i+1);
-                printf("Полное имя: %s\nНомер телефона: %s\nВремя последнего звонка: %d\n", sub[i].full_name, sub[i].phone, sub[i].time);
+                printf("Полное имя: %s\nНомер телефона: %s\nВремя последнего звонка: %lld\n", sub[i].full_name, sub[i].phone, sub[i].time);
             }
             
         } else if (com == 2) {

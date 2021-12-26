@@ -35,6 +35,8 @@ void swapStructs(Sub* a, Sub* b) {
     strcpy(b->full_name, tmp.full_name);
     strcpy(b->phone, tmp.phone);
     b->time = tmp.time;
+
+    free(tmp.full_name);
 }
 
 
